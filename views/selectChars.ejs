@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>Stock Scraper</title>
+    <title>Stat Manager: Player Select</title>
     <script src="http://fb.me/react-0.4.1.js"></script>
     <script src="http://fb.me/JSXTransformer-0.4.1.js"></script>
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css" rel="stylesheet">
@@ -8,12 +8,100 @@
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
   </head>
   <body>	
-	<div class="row">		
-		<div class="col-md-8">Char Selection</div>
-		<div class="col-md-4">Char Data</div>
+	<div class="row">
+		<div class="col-md-2">
+			<h3>Char Selection</h3>
+			<ul class="nav nav-pills nav-stacked" name="charselect"></ul>
+		</div>
+		<div class="col-md-10" name="chardata">
+			<h3>Char Data</h3>
+			<div class="row">
+				<div class="col-md-7">
+					<h2 id="char_name">Character Name</h2>
+				</div>
+				<div class="col-md-3">
+					Where the picture will go in a polished version
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-5">
+					<h3>Speed</h3>
+					<div id="char_speed"></div>
+				</div>
+				<div class="col-md-5">
+					<h3>Might</h3>
+					<div id="char_might"></div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-5">
+					<h3>Sanity</h3>
+					<div id="char_sanity"></div>
+				</div>
+				<div class="col-md-5">
+					<h3>Knowledge</h3>
+					<div id="char_knowledge"></div>
+				</div>					
+			</div>	
+			<div class="row">
+				<br/><br/><br/>
+				<form action="/createPlayer" method="POST">
+				<input name="name" type="text" value="Your Name Here"/> <input type="submit" value="Create Player"/>
+				<input hidden name="index" type="text" value="-1">
+				</form>							
+			</div>	
+			<div class="row">
+				<br/><br/><br/>
+				<a href="/startGame">Close Character Creation/Start Game</a>
+			</div>
+		</div>
 	</div>
 	<script>
+		var jsonData = <%-JSON.stringify(jsonData)%>;
+		var charSelect = document.getElementsByName("charselect")[0];
+		var chardata = document.getElementsByName("chardata")[0];
+		var charName = document.getElementById("char_name");
+		var charSpeed = document.getElementById("char_speed");
+		var charMight = document.getElementById("char_might");
+		var charSanity = document.getElementById("char_sanity");
+		var charKnowledge = document.getElementById("char_knowledge");
+		var charIndex = document.getElementsByName("index")[0];
 		
+		var createStatView = function(arr, curr, original){
+			var strResult = "";
+			for(var x = 0; x<arr.length; x++){
+				if(curr == x && original == x)
+					strResult += "<b><i style=\"color:green\">"+arr[x].toString()+"</i></b>, ";
+				else if(curr == x)
+					strResult += "<b>"+arr[x].toString()+"</b>, ";
+				else if(original == x)
+					strResult += "<i style=\"color:green\">"+arr[x].toString()+"</i>, ";
+				else
+					strResult += arr[x].toString()+", ";
+			}			
+			return strResult;
+		};
+		
+		var loadCharProfile = function(index){
+			//var index = parseInt(this.getAttribute("data-index"));
+			charName.innerHTML = jsonData[index].name;
+			charSpeed.innerHTML = createStatView(jsonData[index].speed, -1, jsonData[index].defaultSpeed);
+			charMight.innerHTML = createStatView(jsonData[index].might, -1, jsonData[index].defaultMight);
+			charSanity.innerHTML = createStatView(jsonData[index].sanity, -1, jsonData[index].defaultSanity);
+			charKnowledge.innerHTML = createStatView(jsonData[index].knowledge, -1, jsonData[index].defaultKnowledge);
+			charIndex.value = index;
+		};
+		
+		for(var x =0; x<jsonData.length; x++){
+			var li = document.createElement("li");
+			var a = document.createElement("a");
+			a.setAttribute("name", jsonData[x].name);
+			a.setAttribute("data-index", x.toString());
+			a.onclick = loadCharProfile.bind(null,x);
+			a.innerHTML= jsonData[x].name;			
+			li.appendChild(a);		
+			charSelect.appendChild(li);
+		}
 	</script>
   </body>
 </html>

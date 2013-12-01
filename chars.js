@@ -1,5 +1,5 @@
 exports.MAX_STAT_INDEX = 9;
-exports.Colors = {
+var Colors = {
 	green: "#00BB00",
 	purple: "#CC3399",
 	white: "#FFFFFF",
@@ -7,6 +7,8 @@ exports.Colors = {
 	blue: "#0033CC",
 	red: "#FF0000"
 }
+exports.Colors = Colors;
+
 exports.Characters = [ 
 {	name: "Brandon Jaspers",
 	color: Colors.green,

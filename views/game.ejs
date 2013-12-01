@@ -1,0 +1,106 @@
+<html>
+  <head>
+    <title>Stat Manager: Game on!</title>
+    <script src="http://fb.me/react-0.4.1.js"></script>
+    <script src="http://fb.me/JSXTransformer-0.4.1.js"></script>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
+  </head>
+  <body>	
+<form action="/createPlayer" method="POST">
+<div class="row">
+<div class="col-md-2">
+	<h3>Char Selection</h3>
+	<ul class="nav nav-pills nav-stacked" name="charselect"></ul>
+</div>
+<div class="col-md-10" name="chardata">
+	<h3>Char Data</h3>
+	<div class="row">
+		<div class="col-md-7">
+			<h2 id="char_name">Character Name</h2>
+		</div>
+		<div class="col-md-3">
+			Where the picture will go in a polished version
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-5">
+			<h3>Speed</h3>
+			<input style="display:inline-block" type="submit" value="-" formaction="/minus/speed"/>
+			<input style="display:inline-block" type="submit" value="+" formaction="/plus/speed"/>
+			<div id="char_speed"></div>
+		</div>
+		<div class="col-md-5">
+			<h3>Might</h3>
+			<input style="display:inline-block" type="submit" value="-" formaction="/minus/might"/>
+			<input style="display:inline-block" type="submit" value="+" formaction="/plus/might"/>
+			<div id="char_might"></div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-5">
+			<h3>Sanity</h3>
+			<input style="display:inline-block" type="submit" value="-" formaction="/minus/sanity"/>
+			<input style="display:inline-block" type="submit" value="+" formaction="/plus/sanity"/>
+			<div id="char_sanity"></div>
+		</div>
+		<div class="col-md-5">
+			<h3>Knowledge</h3>
+			<input style="display:inline-block" type="submit" value="-" formaction="/minus/knowledge"/>
+			<input style="display:inline-block" type="submit" value="+" formaction="/plus/knowledge"/>
+			<div id="char_knowledge"></div>
+		</div>						
+	</div>
+	<input hidden name="index" type="text" value="-1">
+	</form>
+	<script>
+	var jsonData = <%-JSON.stringify(jsonData)%>;
+	var players = <%-JSON.stringify(players)%>;
+	var charSelect = document.getElementsByName("charselect")[0];
+	var chardata = document.getElementsByName("chardata")[0];
+	var charName = document.getElementById("char_name");
+	var charSpeed = document.getElementById("char_speed");
+	var charMight = document.getElementById("char_might");
+	var charSanity = document.getElementById("char_sanity");
+	var charKnowledge = document.getElementById("char_knowledge");
+	var charIndex = document.getElementsByName("index")[0];
+	
+	var createStatView = function(arr, curr, original){
+		var strResult = "";
+		for(var x = 0; x<arr.length; x++){
+			if(curr == x && original == x)
+				strResult += "<b style=\"color:red\"><i style=\"color:green\">"+arr[x].toString()+"</i></b>, ";
+			else if(curr == x)
+				strResult += "<b style=\"color:red\">"+arr[x].toString()+"</b>, ";
+			else if(original == x)
+				strResult += "<i style=\"color:green\">"+arr[x].toString()+"</i>, ";
+			else
+				strResult += arr[x].toString()+", ";
+		}			
+		return strResult;
+	};
+	
+	var loadCharProfile = function(index){
+		//var index = parseInt(this.getAttribute("data-index"));
+		charName.innerHTML = jsonData[index].name;
+		charSpeed.innerHTML = createStatView(players[index].char.speed, players[index].currSpeed, players[index].char.defaultSpeed);
+		charMight.innerHTML = createStatView(players[index].char.might, players[index].currMight, players[index].char.defaultMight);
+		charSanity.innerHTML = createStatView(players[index].char.sanity, players[index].currSanity, players[index].char.defaultSanity);
+		charKnowledge.innerHTML = createStatView(players[index].char.knowledge, players[index].currKnowledge, players[index].char.defaultKnowledge);
+		charIndex.value = index;
+	};
+	
+	for(var x =0; x<players.length; x++){
+		var li = document.createElement("li");
+		var a = document.createElement("a");
+		a.setAttribute("name", players[x].name);
+		a.setAttribute("data-index", x.toString());
+		a.onclick = loadCharProfile.bind(null,x);
+		a.innerHTML= players[x].name;			
+		li.appendChild(a);		
+		charSelect.appendChild(li);
+	}
+	</script>
+  </body>
+</html>
