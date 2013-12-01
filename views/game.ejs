@@ -83,12 +83,13 @@
 	
 	var loadCharProfile = function(index){
 		//var index = parseInt(this.getAttribute("data-index"));
-		charName.innerHTML = jsonData[index].name;
+		charName.innerHTML = players[index].char.name;
 		charSpeed.innerHTML = createStatView(players[index].char.speed, players[index].currSpeed, players[index].char.defaultSpeed);
 		charMight.innerHTML = createStatView(players[index].char.might, players[index].currMight, players[index].char.defaultMight);
 		charSanity.innerHTML = createStatView(players[index].char.sanity, players[index].currSanity, players[index].char.defaultSanity);
 		charKnowledge.innerHTML = createStatView(players[index].char.knowledge, players[index].currKnowledge, players[index].char.defaultKnowledge);
 		charIndex.value = index;
+		console.log(players[index]);
 	};
 	
 	for(var x =0; x<players.length; x++){
@@ -97,8 +98,8 @@
 		a.setAttribute("name", players[x].name);
 		a.setAttribute("data-index", x.toString());
 		a.onclick = loadCharProfile.bind(null,x);
-		a.innerHTML= players[x].name;			
-		li.appendChild(a);		
+		a.innerHTML= players[x].name;	
+		li.appendChild(a);
 		charSelect.appendChild(li);
 	}
 	</script>
