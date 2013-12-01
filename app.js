@@ -89,4 +89,10 @@ switch (req.params['stat']){
 res.redirect("/");
 });
 
+app.get("/restart", function(req,res){
+	players = [];
+	state = GameStates.selectChars;
+	res.redirect("/");
+});
+
 app.listen(port);
