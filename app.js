@@ -6,87 +6,78 @@ app.set("view engine", "ejs");
 app.use(express.bodyParser());
 app.use(express.methodOverride());
 app.use(express.static(__dirname + '/views'));
-	
-var GameStates = {
-	selectChars: 1,
-	game: 2,
-	gameOver: 3
-};
-var state = GameStates.selectChars;
-var players = [];
+
+var dummygames = [{id: "0", name: "dummyGame",players: [{name: "dummyname", character: {name: "dummychar"}}]}];
+var games = [];
 
 app.get("/", function(req,res){	
-	switch (state) {			
-		case GameStates.selectChars:
-			res.render("selectChars", {jsonData: characters.Characters});
-			break;
-			
-		case GameStates.game:
-			res.render("game", {jsonData: characters.Characters, players: players});
-			break;
-			
-		case GameStates.gameOver:
-			res.render("gameOver");
-			break;
-	}
+	res.render("lobby", {games: games});
 });
 
-app.get("/startGame", function(req,res){
-	state = GameStates.game;
-	res.redirect("/");
+app.post("/creategame", function(req,res){
+	games.push({id: (games.length).toString(), name: req.body["name"],players: []});
+	var redir = "/game/"+(games.length-1).toString();
+	res.redirect(redir);
 });
 
-app.post("/createPlayer", function(req,res){
+app.get("/game/:index", function(req,res){
+	res.render("game",{game: games[req.params['index']]});
+});
+
+app.get("/createplayer/:gameid", function(req,res){
+	res.render("selectChars",{jsonData: characters.Characters,gameid: req.params["gameid"]});
+});
+
+app.post("/createplayer/:gameid", function(req,res){
 	console.log(req.body);
 	var selectedPlayer = characters.Characters[parseInt(req.body["index"])];
-	players.push(
+	games[req.params["gameid"]].players.push(
 	   {name: req.body["name"], 
-		char: selectedPlayer,
+		character: selectedPlayer,
 		currSpeed: selectedPlayer.defaultSpeed,
 		currMight: selectedPlayer.defaultMight,
 		currSanity: selectedPlayer.defaultSanity,
 		currKnowledge: selectedPlayer.defaultKnowledge});
-	console.log(players);
-	res.redirect("/");
+	res.redirect("/game/"+req.params["gameid"]);
 });
 
-app.post("/plus/:stat", function(req,res){
+app.post("/game/:gameid/plus/:stat", function(req,res){
 	console.log(req.body);
 	var index = parseInt(req.body["index"]);
 	switch (req.params['stat']){
 		case "speed":
-			players[index].currSpeed += 1;
+			games[req.params["gameid"]].players[index].currSpeed += 1;
 			break;
 		case "might":
-			players[index].currMight += 1;
+			games[req.params["gameid"]].players[index].currMight += 1;
 			break;
 		case "sanity":
-			players[index].currSanity += 1;
+			games[req.params["gameid"]].players[index].currSanity += 1;
 			break;
 		case "knowledge":
-			players[index].currKnowledge += 1;
+			games[req.params["gameid"]].players[index].currKnowledge += 1;
 			break;
 	}
-	res.redirect("/");
+	res.redirect("/game/"+req.params["gameid"]);
 });
 
-app.post("/minus/:stat", function(req,res){
+app.post("/game/:gameid/minus/:stat", function(req,res){
 var index = parseInt(req.body["index"]);
 switch (req.params['stat']){
 	case "speed":
-		players[index].currSpeed -= 1;
+		games[req.params["gameid"]].players[index].currSpeed -= 1;
 		break;
 	case "might":
-		players[index].currMight -= 1;
+		games[req.params["gameid"]].players[index].currMight -= 1;
 		break;
 	case "sanity":
-		players[index].currSanity -= 1;
+		games[req.params["gameid"]].players[index].currSanity -= 1;
 		break;
 	case "knowledge":
-		players[index].currKnowledge -= 1;
+		games[req.params["gameid"]].players[index].currKnowledge -= 1;
 		break;
 }
-res.redirect("/");
+res.redirect("/game/"+req.params["gameid"]);
 });
 
 app.get("/restart", function(req,res){
