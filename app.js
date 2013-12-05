@@ -81,8 +81,7 @@ res.redirect("/game/"+req.params["gameid"]);
 });
 
 app.get("/restart", function(req,res){
-	players = [];
-	state = GameStates.selectChars;
+	games = [];
 	res.redirect("/");
 });
 
